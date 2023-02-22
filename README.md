@@ -1,3 +1,3 @@
 # ICE TABLES
 
-Nola's ICE Table maker solver thing
+Nola's ICE Table solver
