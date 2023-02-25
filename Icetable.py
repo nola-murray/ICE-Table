@@ -75,7 +75,14 @@ reac, prod = balancer(reactants, products)
 for key, value in reac.items():
     reac[key] = -value
 
+x = symbols('x')
+full_ans = solve(((2*x) ** 2 / ((2-x) *(3-x)) )- int(Keq))
 
+print(full_ans)
+print(reac)
+print(prod)
+
+#the next bit of lines are used to create the actual ice table
 cols = [""] + [format_compound(coef, compound) for compound, coef in reac.items()] + [format_compound(coef, compound) for compound, coef in prod.items()]
 initial = ['[Initial] I'] + list(initial_reac.values()) + list(initial_prod.values())
 change = ['[Change] C'] + [format_x(x) for x in reac.values()] + [format_x(x) for x in prod.values()]
@@ -88,6 +95,4 @@ table = plt.table(cellText=sel.values, colLabels=sel.columns, loc='center')
 plt.axis('off')
 plt.show()
 
-print(reac)
-print(prod)
 
