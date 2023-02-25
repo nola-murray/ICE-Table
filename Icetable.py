@@ -69,15 +69,23 @@ for product in products:
 Keq = input("Please enter your equilibrium constant: ")
 reacq = input("Please enter your reaction quotient (Q): ")
 
-# if Keq > reacq and 
+
 reac, prod = balancer(reactants, products)
 
 for key, value in reac.items():
     reac[key] = -value
 
 x = symbols('x')
-full_ans = solve(((2*x) ** 2 / ((2-x) *(3-x)) )- int(Keq))
 
+# for value in reac.values():
+prod_coef = []
+for value in prod.values():
+    ans = (int(value) * x) ** int(value)
+    prod_coef.append(ans)
+
+full_ans = solve((ans/ ((1-x) ** 2 )- float(Keq)))
+
+print(prod_coef)
 print(full_ans)
 print(reac)
 print(prod)
@@ -94,5 +102,3 @@ sel = df[cols]
 table = plt.table(cellText=sel.values, colLabels=sel.columns, loc='center')
 plt.axis('off')
 plt.show()
-
-
