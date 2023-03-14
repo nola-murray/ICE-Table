@@ -1,9 +1,3 @@
-""" Things we need:
-1. The chemical reaction equation with coefficients
-2. The initial concentrations of the reactants and products
-3. The change which is minus for reactants and plus for products (coefficient * x)
-4. equilibrium values which is initial - change"""
-
 from chempy import balance_stoichiometry 
 from pprint import pprint
 from sympy import symbols, solve
@@ -23,9 +17,9 @@ def format_x(coef):
     elif coef == -1:
         return '-x'
     elif coef > 1:
-        return '+' + str(coef) + 'x'
+        return '+' + str(coef) + '*' + 'x'
     else:
-        return str(coef) + 'x'
+        return str(coef) + '*x'
 
 def format_compound(coef, compound):
     if abs(coef) == 1:
@@ -38,6 +32,16 @@ def format_equil(initial):
         return ''
     else:
         return str(initial)
+
+def multi(equil, pow):
+    biggie = ''
+    for idx, eqn in enumerate(equil):
+        biggie += '(' + eqn + ')**' + str(abs(pow[idx])) +'*'
+    return "(" + biggie[:-1] + ")"
+
+def div(prod, reac):
+    return "(" + prod + "/" + reac + ")"
+
 
 # this is gonna ask the user for the reactant in the equation
 reactants = []
@@ -65,6 +69,7 @@ for product in products:
     text = input("Please enter the inital concentration for " + product + ": ")
     initial_prod[product] = float(text)
 
+
 # this is gonna ask for the equilibrium constant and Q value
 Keq = input("Please enter your equilibrium constant: ")
 reacq = input("Please enter your reaction quotient (Q): ")
@@ -77,24 +82,19 @@ for key, value in reac.items():
 
 x = symbols('x')
 
-# for value in reac.values():
-prod_coef = []
-for value in prod.values():
-    ans = (int(value) * x) ** int(value)
-    prod_coef.append(ans)
-
-full_ans = solve((ans/ ((1-x) ** 2 )- float(Keq)))
-
-print(prod_coef)
-print(full_ans)
-print(reac)
-print(prod)
-
 #the next bit of lines are used to create the actual ice table
 cols = [""] + [format_compound(coef, compound) for compound, coef in reac.items()] + [format_compound(coef, compound) for compound, coef in prod.items()]
 initial = ['[Initial] I'] + list(initial_reac.values()) + list(initial_prod.values())
 change = ['[Change] C'] + [format_x(x) for x in reac.values()] + [format_x(x) for x in prod.values()]
 equil = ['[Equilibrium] E'] + [format_equil(initial[idx]) + change[idx] for idx in range(1, len(initial))]
+
+unformat_change = [''] + [format_x(x) for x in reac.values()] + [format_x(x) for x in prod.values()]
+unformatted = [str(initial[idx]) + change[idx] for idx in range(1, len(initial))]
+reac_eqn = unformatted[:len(reactants)]
+prod_eqn = unformatted[len(reactants):]
+
+roots = solve(div(multi(prod_eqn, list(prod.values())), multi(reac_eqn, list(reac.values()))) + "-" + str(Keq)) 
+print(roots)
 
 data = [initial, change, equil]
 df = pd.DataFrame(data, columns=cols)
